@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: escaperoom-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: escaperoom
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  next-app:
+    # Build your Next.js app using the new Debian-based image
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: escaperoom-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    # Port mapping
+    ports:
+      - "3000:3000"
+
+    # Environment variables for Next.js + Prisma
+    environment:
+      DATABASE_URL: postgresql://postgres:Mriduls11.@database-1.cp0mi8aagn9a.ap-southeast-2.rds.amazonaws.com:5432/postgres?schema=public
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: 1
+      NEXT_PUBLIC_STUDENT_NAME: "Dinakshi Thakur"
+      NEXT_PUBLIC_STUDENT_NUMBER: "21782127"
+
+    # Mount volumes for hot reloads during development (optional)
+    volumes:
+      - .:/app
+      - ./app:/app/app
+      - ./components:/app/components
+      - ./lib:/app/lib
+      - ./prisma:/app/prisma
+      - ./public:/app/public
+      - ./next.config.mjs:/app/next.config.mjs
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json
+
+volumes:
+  postgres_data:
