@@ -44,7 +44,6 @@ services:
 
     # Mount volumes for hot reloads during development (optional)
     volumes:
-      - .:/app
       - ./app:/app/app
       - ./components:/app/components
       - ./lib:/app/lib

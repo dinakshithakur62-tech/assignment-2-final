@@ -55,16 +55,26 @@ export default function AboutPage() {
               Usage Video
             </h2>
           </div>
+
           <div className="bg-gray-100 dark:bg-gray-900 rounded-lg p-8 text-center">
-            <Video size={48} className="mx-auto mb-4 text-gray-400" />
+            {/* 🎥 Embedded video */}
+            <video
+              src="https://my-assignment-outputs-21782127.s3.ap-southeast-2.amazonaws.com/extras/WhatsApp+Video+2025-10-18+at+15.26.40.mp4"
+              controls
+              className="mx-auto rounded-lg shadow-lg w-full max-w-2xl mb-4"
+            >
+              Your browser does not support the video tag.
+            </video>
+
             <p className="text-gray-600 dark:text-gray-400">
-              Video demonstration will be embedded here
+              This is the demonstration video for project usage.
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-              Duration: 3-8 minutes
+              Duration: 3–8 minutes
             </p>
           </div>
         </div>
+
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
           <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
