@@ -39,30 +39,32 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build
 
 # ---------------------------
-# 🚀 Production Stage
+# 🚀 Production Stage (Fixed)
 # ---------------------------
 FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
+ENV HOST=0.0.0.0
+ENV PORT=80
 
-# Create app user for security
+
+# ✅ Create user with a proper home directory
 RUN addgroup --system --gid 1001 nodejs \
- && adduser --system --uid 1001 nextjs
+ && adduser --system --uid 1001 --home /home/nextjs nextjs
 
-# Copy only required artifacts
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# ✅ Set home env and permissions
+ENV HOME=/home/nextjs
+RUN mkdir -p $HOME && chown -R nextjs:nodejs /app $HOME
+
+# ✅ Copy necessary app artifacts
+#COPY --from=builder /app/.next/standalone ./
+#COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
-
-# Copy all Prisma engines and dependencies
 COPY --from=builder /app/node_modules ./node_modules
 
 USER nextjs
-EXPOSE 3000
+EXPOSE 80
 
-# Run database migration and start server
-CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
+# ✅ Run migrations and start app
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
